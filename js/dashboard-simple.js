@@ -1,7 +1,7 @@
 // Simplified Dashboard Class for certificate generation focus
 class Dashboard {
     constructor() {
-        this.baseURL = window.location.protocol + '//' + window.location.host + '/api';
+        this.baseURL = 'http://localhost:3000/api';
         this.checkAuthentication();
         this.loadUserInfo();
         this.setupEventListeners();
@@ -126,6 +126,7 @@ class Dashboard {
             }
 
             const students = await response.json();
+            this.allStudents = students; // Store all students for filtering
             this.displayStudents(students);
             this.updateStudentStats(students);
 
@@ -133,6 +134,36 @@ class Dashboard {
             console.error('Error loading students:', error);
             this.showError('Failed to load students');
         }
+    }
+
+    filterStudents(searchTerm) {
+        if (!this.allStudents) return;
+        
+        searchTerm = searchTerm.toLowerCase().trim();
+        let filteredStudents;
+
+        if (searchTerm === '') {
+            filteredStudents = this.allStudents;
+        } else {
+            filteredStudents = this.allStudents.filter(student => {
+                const searchFields = [
+                    student.name,
+                    student.rollNumber,
+                    student.email,
+                    student.phone,
+                    student.course,
+                    student.year,
+                    student.section
+                ];
+                
+                return searchFields.some(field => 
+                    field && field.toString().toLowerCase().includes(searchTerm)
+                );
+            });
+        }
+
+        this.displayStudents(filteredStudents);
+        this.updateStudentStats(filteredStudents);
     }
 
     displayStudents(students) {
@@ -179,6 +210,14 @@ class Dashboard {
     }
 
     setupStudentManagement() {
+        // Setup search functionality
+        const searchInput = document.getElementById('studentSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.filterStudents(e.target.value);
+            });
+        }
+
         // Add student button
         const addStudentBtn = document.getElementById('addStudentBtn');
         if (addStudentBtn) {
@@ -225,6 +264,47 @@ class Dashboard {
             });
         }
 
+        // Setup CSV file upload
+        const csvUploadArea = document.getElementById('csvUploadArea');
+        const csvFileInput = document.getElementById('csvFileInput');
+        if (csvUploadArea && csvFileInput) {
+            csvUploadArea.addEventListener('click', () => {
+                csvFileInput.click();
+            });
+
+            csvUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                csvUploadArea.classList.add('dragover');
+            });
+
+            csvUploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                csvUploadArea.classList.remove('dragover');
+            });
+
+            csvUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                csvUploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'text/csv') {
+                    this.handleCsvUpload(files[0]);
+                } else {
+                    this.showError('Please upload a valid CSV file');
+                }
+            });
+
+            csvFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.handleCsvUpload(file);
+                }
+            });
+        }
+
         // Student form submission
         const addStudentForm = document.getElementById('addStudentForm');
         if (addStudentForm) {
@@ -249,7 +329,10 @@ class Dashboard {
         try {
             const response = await fetch(`${this.baseURL}/students`, {
                 method: 'POST',
-                headers: this.getAuthHeaders(),
+                headers: {
+                    ...this.getAuthHeaders(),
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(formData)
             });
 
@@ -276,22 +359,68 @@ class Dashboard {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to download template');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to download template');
             }
 
+            // Check if the response is empty
             const blob = await response.blob();
+            if (blob.size === 0) {
+                throw new Error('Template file is empty');
+            }
+
+            // Create download link
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = 'student_template.csv';
+            a.style.display = 'none';
             document.body.appendChild(a);
+            
+            // Trigger download
             a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+
+            this.showSuccess('Template downloaded successfully');
 
         } catch (error) {
             console.error('Error downloading template:', error);
-            this.showError('Failed to download template');
+            this.showError(error.message || 'Failed to download template');
+        }
+    }
+
+    async handleCsvUpload(file) {
+        try {
+            const formData = new FormData();
+            formData.append('csvFile', file);
+
+            const response = await fetch(`${this.baseURL}/students/bulk`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to upload students');
+            }
+
+            const result = await response.json();
+            this.showSuccess(result.message);
+            document.getElementById('bulkUploadModal').style.display = 'none';
+            document.getElementById('csvFileInput').value = '';
+            this.loadStudents();
+
+        } catch (error) {
+            console.error('Error uploading CSV:', error);
+            this.showError(error.message);
         }
     }
 
