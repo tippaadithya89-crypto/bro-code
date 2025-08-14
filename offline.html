@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate Generator - Instant Event Certificates</title>
+    <title>Certificate Generator - Offline Mode</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -16,9 +16,9 @@
                 Certificate Generator
             </a>
             <ul class="navbar-nav">
-                <li><a href="/login.html" class="nav-link btn-primary">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Login
+                <li><a href="/" class="nav-link btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    Try to Reconnect
                 </a></li>
             </ul>
         </div>
@@ -27,30 +27,38 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1><i class="fas fa-certificate"></i> Certificate Generator</h1>
-            <p>Transform your event management with instant, professional certificate generation. Upload participant data and create beautiful certificates in minutes, not hours.</p>
+            <h1><i class="fas fa-certificate"></i> Certificate Generator - Offline Mode</h1>
+            <p>Currently running in offline mode. Database features are unavailable, but you can still generate certificates using CSV files.</p>
+            
+            <div style="background: rgba(255, 243, 205, 0.2); color: #856404; padding: 20px; margin: 30px 0; border-radius: 15px; border: 1px solid rgba(255, 234, 167, 0.3);">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Note:</strong> Running in offline mode. Database features are unavailable.
+                <a href="/" style="color: #856404; text-decoration: underline; margin-left: 10px;">
+                    Try to reconnect
+                </a>
+            </div>
             
             <div class="hero-features">
                 <div class="feature-card">
                     <i class="fas fa-upload"></i>
-                    <h3>Easy CSV Upload</h3>
-                    <p>Simply upload your participant list and let our system handle the rest</p>
+                    <h3>CSV Upload Available</h3>
+                    <p>Upload participant data via CSV files</p>
                 </div>
                 <div class="feature-card">
                     <i class="fas fa-palette"></i>
-                    <h3>Professional Templates</h3>
-                    <p>Choose from beautiful, customizable certificate templates</p>
+                    <h3>All Templates Available</h3>
+                    <p>Access to all certificate templates</p>
                 </div>
                 <div class="feature-card">
                     <i class="fas fa-download"></i>
-                    <h3>Instant Download</h3>
-                    <p>Generate and download all certificates as a convenient ZIP file</p>
+                    <h3>Download Ready</h3>
+                    <p>Generate and download certificates instantly</p>
                 </div>
             </div>
 
             <a href="#certificate-generator" class="cta-button" onclick="scrollToGenerator()">
                 <i class="fas fa-magic"></i>
-                Generate Certificates Now
+                Generate Certificates (Offline)
             </a>
         </div>
     </section>
@@ -58,8 +66,8 @@
     <!-- Certificate Generator Section -->
     <div id="certificate-generator" class="container">
         <header>
-            <h1><i class="fas fa-certificate"></i> Certificate Generator</h1>
-            <p>Generate instant event participation certificates</p>
+            <h1><i class="fas fa-certificate"></i> Certificate Generator - Offline Mode</h1>
+            <p>Generate certificates without database connectivity</p>
         </header>
 
         <!-- Step 1: CSV Upload -->

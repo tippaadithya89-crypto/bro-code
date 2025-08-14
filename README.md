@@ -2,16 +2,49 @@
 
 A modern web application that generates instant event participation certificates from CSV data. This solution eliminates manual certificate preparation delays and provides a seamless experience for event organizers.
 
+# Certificate Generator Web App
+
+A comprehensive web application that generates instant event participation certificates with MongoDB authentication and student management. This solution eliminates manual certificate preparation delays and provides a seamless experience for event organizers with multi-college support.
+
 ## 🌟 Features
 
+### Authentication & Multi-College Support
+- **College-based Authentication**: Secure login system with college selection
+- **Multi-tenant Architecture**: Support for multiple colleges in single system
+- **User Roles**: Admin and staff roles with appropriate permissions
+- **JWT Authentication**: Secure token-based authentication
+- **Demo Data**: Pre-populated colleges and users for testing
+
+### Student Management
+- **Student Database**: Comprehensive student management for each college
+- **Bulk Import**: CSV upload for adding multiple students
+- **Student Profiles**: Detailed student information (name, roll number, course, etc.)
+- **Category Assignment**: Assign merit categories to students
+- **Search & Filter**: Advanced filtering by name, course, category
+- **CRUD Operations**: Add, edit, delete student records
+
+### Certificate Generation
 - **CSV Upload**: Easy drag-and-drop or click-to-upload CSV files
+- **College Integration**: Generate certificates directly from student database
 - **Template Download**: Downloadable CSV template for users without existing data
 - **Participant Review**: Display and verify participant information before generation
+- **Merit Categories**: Assign different certificate categories to participants:
+  - **Participation** - Standard participation certificates
+  - **Merit** - Recognition for meritorious performance
+  - **Excellence** - Awards for excellent achievement
+  - **Outstanding** - Certificates for outstanding performance
+  - **Custom Categories** - Add your own custom certificate categories
+- **Category Management**: 
+  - Select multiple participants and assign categories in bulk
+  - Add custom categories with text input
+  - Visual category badges on participant list
+- **Template Previews**: See actual certificate previews before selection
 - **Multiple Templates**: Choose from 4 professionally designed certificate templates:
   - Modern Certificate (Clean and professional)
   - Classic Certificate (Traditional formal design)
   - Colorful Certificate (Vibrant and energetic)
   - Minimalist Certificate (Simple and clean)
+- **Category-Specific Certificates**: Different certificate titles and text based on category
 - **Batch Generation**: Generate certificates for all participants at once
 - **ZIP Download**: Download all certificates in a single ZIP file
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
@@ -21,44 +54,112 @@ A modern web application that generates instant event participation certificates
 
 ### Prerequisites
 
+- **Node.js** (version 14 or higher)
+- **MongoDB** (local installation or MongoDB Atlas)
 - Modern web browser (Chrome, Firefox, Safari, Edge)
-- No server or installation required - runs completely in the browser
 
 ### Installation
 
-1. Clone or download this repository
-2. Open `index.html` in your web browser
-3. Start generating certificates!
+1. **Clone or download this repository**
+2. **Run the setup script**:
+   - **Windows**: Double-click `setup.bat` or run in command prompt
+   - **Linux/Mac**: Run `chmod +x setup.sh && ./setup.sh`
+3. **Start the server**:
+   ```bash
+   cd server
+   npm start
+   ```
+4. **Open your browser** and visit `http://localhost:3000`
 
-### Quick Setup
+### Quick Setup Commands
 
 ```bash
-# If you want to run with a local server (optional)
-npx http-server .
-# Then visit http://localhost:8080
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Start the server
+npm start
 ```
+
+### Demo Credentials
+
+The system comes with pre-populated demo data:
+
+**Colleges Available:**
+- ABC Engineering College
+- XYZ University  
+- Tech Institute of Technology
+
+**Login Credentials (for any college):**
+- **Username**: `admin` | **Password**: `password123`
+- **Username**: `staff1` | **Password**: `password123`
 
 ## 📋 How to Use
 
-### Step 1: Upload Participant Data
-1. **Have a CSV file?** Drag and drop it onto the upload area or click to browse
-2. **Don't have a CSV?** Click "Download CSV Template" to get a sample file
-3. Fill out the template with your participant information
+### Step 1: Login
+1. **Open the application** at `http://localhost:3000`
+2. **Select your college** from the dropdown
+3. **Enter credentials**:
+   - Username: `admin` or `staff1`
+   - Password: `password123`
+4. **Click Login** to access the dashboard
 
-### Step 2: Review Participants
-- Verify all participant information is correct
-- Check the participant count
-- Click "Next: Choose Template" to proceed
+### Step 2: Choose Your Path
+After login, you have two main options:
 
-### Step 3: Select Certificate Template
-- Browse through 4 beautiful template options
-- Click on your preferred template to select it
-- Click "Generate Certificates" to start the process
+#### Option A: Generate Certificates
+- Choose "Generate Certificates" for immediate certificate creation
+- Option 1: **Use College Students** - Generate from your student database
+- Option 2: **Upload Custom CSV** - Use external participant data
 
-### Step 4: Download Certificates
-- Watch the progress bar as certificates are generated
-- Click "Download All Certificates" to get a ZIP file
-- All certificates are automatically saved as individual PDF files
+#### Option B: Manage Students
+- Choose "Manage Students" to handle your college's student database
+- View, add, edit, or delete student records
+- Bulk upload students via CSV
+- Assign categories to students
+
+### Step 3A: Student Management Workflow
+1. **View Students**: See all students in your college with filtering options
+2. **Add Individual Student**: Use the "Add Student" button for single entries
+3. **Bulk Upload**: 
+   - Click "Bulk Upload" 
+   - Download the CSV template if needed
+   - Upload your CSV file with student data
+4. **Manage Categories**: Assign merit categories to students
+5. **Search & Filter**: Use search bar and category filters
+
+### Step 3B: Certificate Generation Workflow  
+1. **Upload Participant Data** (if using custom CSV)
+   - Have a CSV file? Drag and drop it or click to browse
+   - Don't have a CSV? Click "Download CSV Template" to get a sample file
+   - Fill out the template with your participant information
+
+2. **Review Participants & Assign Categories**
+   - Verify all participant information is correct
+   - **Assign Categories**: 
+     - Select participants using checkboxes
+     - Choose from existing categories (Participation, Merit, Excellence, Outstanding)
+     - Click "Assign to Selected" to apply the category
+   - **Add Custom Categories**:
+     - Type a new category name in the text field
+     - Click "Add Category" to create it
+     - The new category will be available for assignment
+   - Check the participant count and category assignments
+   - Click "Next: Choose Template" to proceed
+
+3. **Select Certificate Template**
+   - Browse through 4 beautiful template options with **live previews**
+   - See exactly how your certificates will look
+   - Click on your preferred template to select it
+   - Click "Generate Certificates" to start the process
+
+4. **Download Certificates**
+   - Watch the progress bar as certificates are generated
+   - Click "Download All Certificates" to get a ZIP file
+   - All certificates are automatically saved as individual PDF files
 
 ## 📊 CSV Format
 
@@ -71,14 +172,28 @@ Your CSV file should include the following columns (minimum requirements):
 | date | Event date | ⚡ Recommended |
 | email | Email address | ❌ Optional |
 | position | Role/Position | ❌ Optional |
+| category | Certificate category | ❌ Optional |
 
 ### Sample CSV Content:
 ```csv
-name,event,date,email,position
-John Doe,Annual Conference 2024,2024-08-14,john@email.com,Attendee
-Jane Smith,Annual Conference 2024,2024-08-14,jane@email.com,Speaker
-Mike Johnson,Annual Conference 2024,2024-08-14,mike@email.com,Volunteer
+name,event,date,email,position,category
+John Doe,Annual Conference 2024,2024-08-14,john@email.com,Attendee,participation
+Jane Smith,Annual Conference 2024,2024-08-14,jane@email.com,Speaker,merit
+Mike Johnson,Annual Conference 2024,2024-08-14,mike@email.com,Volunteer,excellence
+Sarah Wilson,Annual Conference 2024,2024-08-14,sarah@email.com,Organizer,outstanding
 ```
+
+### Certificate Categories
+
+The app supports different certificate categories that change the certificate title and content:
+
+- **participation** → "Certificate of Participation"
+- **merit** → "Certificate of Merit"  
+- **excellence** → "Certificate of Excellence"
+- **outstanding** → "Certificate of Outstanding Performance"
+- **custom** → "Certificate of [Custom Category Name]"
+
+If no category is specified, "participation" is used as default.
 
 ## 🎨 Certificate Templates
 
@@ -104,13 +219,84 @@ Mike Johnson,Annual Conference 2024,2024-08-14,mike@email.com,Volunteer
 
 ## 🛠️ Technical Details
 
+### Architecture
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Backend**: Node.js with Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT (JSON Web Tokens)
+- **File Upload**: Multer for CSV processing
+- **PDF Generation**: jsPDF library
+- **File Compression**: JSZip library
+
 ### Built With
-- **HTML5** - Structure and layout
-- **CSS3** - Styling and animations
-- **Vanilla JavaScript** - Core functionality
-- **jsPDF** - PDF generation
-- **JSZip** - ZIP file creation
-- **Font Awesome** - Icons
+- **Frontend Libraries**:
+  - jsPDF - PDF generation
+  - JSZip - ZIP file creation
+  - Font Awesome - Icons
+- **Backend Libraries**:
+  - Express.js - Web framework
+  - Mongoose - MongoDB object modeling
+  - bcryptjs - Password hashing
+  - jsonwebtoken - JWT authentication
+  - multer - File upload handling
+  - csv-parser - CSV file processing
+  - cors - Cross-origin resource sharing
+
+### Database Schema
+
+#### Colleges Collection
+```javascript
+{
+  name: String,
+  code: String,
+  url: String,
+  address: String,
+  phone: String,
+  email: String
+}
+```
+
+#### Users Collection
+```javascript
+{
+  username: String,
+  password: String (hashed),
+  college: ObjectId (ref: College),
+  role: String (admin/staff),
+  email: String,
+  fullName: String
+}
+```
+
+#### Students Collection
+```javascript
+{
+  name: String,
+  rollNumber: String,
+  email: String,
+  phone: String,
+  course: String,
+  year: String,
+  section: String,
+  college: ObjectId (ref: College),
+  category: String,
+  addedBy: ObjectId (ref: User)
+}
+```
+
+### API Endpoints
+
+#### Authentication
+- `GET /api/colleges` - Get all colleges
+- `POST /api/login` - User login
+
+#### Student Management
+- `GET /api/students` - Get students for logged-in user's college
+- `POST /api/students` - Add single student
+- `POST /api/students/bulk` - Bulk upload students via CSV
+- `PUT /api/students/:id` - Update student
+- `DELETE /api/students/:id` - Delete student
+- `GET /api/students/template` - Download CSV template
 
 ### Browser Compatibility
 - Chrome 70+
@@ -120,13 +306,24 @@ Mike Johnson,Annual Conference 2024,2024-08-14,mike@email.com,Volunteer
 
 ### File Structure
 ```
-├── index.html          # Main application page
+├── server/                 # Backend server files
+│   ├── package.json       # Server dependencies
+│   ├── server.js          # Main server file
+│   ├── .env              # Environment variables
+│   └── uploads/          # Temporary CSV uploads
 ├── css/
-│   └── styles.css      # All styles and responsive design
+│   ├── styles.css        # Main app styles
+│   ├── login.css         # Login page styles
+│   └── dashboard.css     # Dashboard styles
 ├── js/
-│   └── app.js          # Main application logic
-├── templates/          # Certificate template assets (future use)
-├── assets/             # Additional assets (future use)
+│   ├── app.js           # Main certificate generator
+│   ├── login.js         # Login functionality
+│   └── dashboard.js     # Dashboard functionality
+├── login.html           # Login page
+├── dashboard.html       # Main dashboard
+├── index.html          # Certificate generator
+├── setup.bat           # Windows setup script
+├── setup.sh            # Linux/Mac setup script
 └── README.md           # This file
 ```
 
