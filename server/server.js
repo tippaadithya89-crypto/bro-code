@@ -88,13 +88,55 @@ const studentSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+// Template Schema
+const templateSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    description: { type: String },
+    college: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    canvas: {
+        width: { type: Number, default: 800 },
+        height: { type: Number, default: 600 },
+        backgroundColor: { type: String, default: '#ffffff' },
+        backgroundImage: { type: String }
+    },
+    elements: [{
+        id: { type: String, required: true },
+        type: { type: String, required: true }, // text, image, shape, field
+        x: { type: Number, required: true },
+        y: { type: Number, required: true },
+        width: { type: Number },
+        height: { type: Number },
+        properties: {
+            text: String,
+            fontSize: { type: Number, default: 16 },
+            fontFamily: { type: String, default: 'Arial' },
+            fontWeight: { type: String, default: 'normal' },
+            fontStyle: { type: String, default: 'normal' },
+            color: { type: String, default: '#000000' },
+            backgroundColor: String,
+            borderColor: String,
+            borderWidth: { type: Number, default: 0 },
+            borderRadius: { type: Number, default: 0 },
+            imageUrl: String,
+            fieldType: String, // name, rollNumber, course, etc.
+            alignment: { type: String, default: 'left' }
+        }
+    }],
+    isActive: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 // Create indexes for better performance
 userSchema.index({ username: 1, college: 1 }, { unique: true });
 studentSchema.index({ rollNumber: 1, college: 1 }, { unique: true });
+templateSchema.index({ college: 1, name: 1 }, { unique: true });
 
 const College = mongoose.model('College', collegeSchema);
 const User = mongoose.model('User', userSchema);
 const Student = mongoose.model('Student', studentSchema);
+const Template = mongoose.model('Template', templateSchema);
 
 // Multer configuration for CSV uploads
 const storage = multer.diskStorage({
@@ -485,6 +527,173 @@ app.delete('/api/students/:id', requireMongo, authenticateToken, async (req, res
         res.json({ message: 'Student deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Template Management Routes
+
+// Get all templates for a college
+app.get('/api/templates', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const templates = await Template.find({ college: req.user.college })
+            .populate('createdBy', 'username')
+            .sort({ createdAt: -1 });
+        res.json(templates);
+    } catch (error) {
+        console.error('Error fetching templates:', error);
+        res.status(500).json({ error: 'Failed to fetch templates' });
+    }
+});
+
+// Get a specific template
+app.get('/api/templates/:id', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const template = await Template.findOne({ 
+            _id: req.params.id, 
+            college: req.user.college 
+        }).populate('createdBy', 'username');
+        
+        if (!template) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        res.json(template);
+    } catch (error) {
+        console.error('Error fetching template:', error);
+        res.status(500).json({ error: 'Failed to fetch template' });
+    }
+});
+
+// Create a new template
+app.post('/api/templates', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const { name, description, canvas, elements } = req.body;
+        
+        // Check if template name already exists for this college
+        const existingTemplate = await Template.findOne({ 
+            name, 
+            college: req.user.college 
+        });
+        
+        if (existingTemplate) {
+            return res.status(400).json({ error: 'Template name already exists' });
+        }
+        
+        const template = new Template({
+            name,
+            description,
+            canvas,
+            elements,
+            college: req.user.college,
+            createdBy: req.user.userId
+        });
+        
+        await template.save();
+        
+        const populatedTemplate = await Template.findById(template._id)
+            .populate('createdBy', 'username');
+        
+        res.status(201).json(populatedTemplate);
+    } catch (error) {
+        console.error('Error creating template:', error);
+        res.status(500).json({ error: 'Failed to create template' });
+    }
+});
+
+// Update a template
+app.put('/api/templates/:id', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const { name, description, canvas, elements } = req.body;
+        
+        const template = await Template.findOne({ 
+            _id: req.params.id, 
+            college: req.user.college 
+        });
+        
+        if (!template) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        // Check if new name conflicts with existing templates (excluding current)
+        if (name && name !== template.name) {
+            const existingTemplate = await Template.findOne({ 
+                name, 
+                college: req.user.college,
+                _id: { $ne: req.params.id }
+            });
+            
+            if (existingTemplate) {
+                return res.status(400).json({ error: 'Template name already exists' });
+            }
+        }
+        
+        template.name = name || template.name;
+        template.description = description || template.description;
+        template.canvas = canvas || template.canvas;
+        template.elements = elements || template.elements;
+        template.updatedAt = new Date();
+        
+        await template.save();
+        
+        const populatedTemplate = await Template.findById(template._id)
+            .populate('createdBy', 'username');
+        
+        res.json(populatedTemplate);
+    } catch (error) {
+        console.error('Error updating template:', error);
+        res.status(500).json({ error: 'Failed to update template' });
+    }
+});
+
+// Delete a template
+app.delete('/api/templates/:id', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const template = await Template.findOneAndDelete({ 
+            _id: req.params.id, 
+            college: req.user.college 
+        });
+        
+        if (!template) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        res.json({ message: 'Template deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting template:', error);
+        res.status(500).json({ error: 'Failed to delete template' });
+    }
+});
+
+// Duplicate a template
+app.post('/api/templates/:id/duplicate', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const originalTemplate = await Template.findOne({ 
+            _id: req.params.id, 
+            college: req.user.college 
+        });
+        
+        if (!originalTemplate) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        const duplicatedTemplate = new Template({
+            name: `${originalTemplate.name} - Copy`,
+            description: originalTemplate.description,
+            canvas: originalTemplate.canvas,
+            elements: originalTemplate.elements,
+            college: req.user.college,
+            createdBy: req.user.userId
+        });
+        
+        await duplicatedTemplate.save();
+        
+        const populatedTemplate = await Template.findById(duplicatedTemplate._id)
+            .populate('createdBy', 'username');
+        
+        res.status(201).json(populatedTemplate);
+    } catch (error) {
+        console.error('Error duplicating template:', error);
+        res.status(500).json({ error: 'Failed to duplicate template' });
     }
 });
 
