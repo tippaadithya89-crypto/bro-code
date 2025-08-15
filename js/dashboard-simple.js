@@ -57,6 +57,22 @@ class Dashboard {
             });
         }
 
+        // Navigation to certificate extraction
+        const certificateExtractionCard = document.getElementById('certificateExtractionCard');
+        if (certificateExtractionCard) {
+            certificateExtractionCard.addEventListener('click', () => {
+                window.location.href = 'certificate-extraction.html';
+            });
+        }
+
+        // Navigation to text changer
+        const textChangerCard = document.getElementById('textChangerCard');
+        if (textChangerCard) {
+            textChangerCard.addEventListener('click', () => {
+                window.location.href = 'text-changer.html';
+            });
+        }
+
         // Back to dashboard buttons
         const backToDashboard = document.getElementById('backToDashboard');
         if (backToDashboard) {

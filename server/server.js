@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
+const { sendCertificateEmail } = require('./email');
 require('dotenv').config();
 
 const app = express();
@@ -513,6 +514,32 @@ app.put('/api/students/:id', requireMongo, authenticateToken, async (req, res) =
 });
 
 // Delete student
+// Send certificate via email
+app.post('/api/certificates/send-email', requireMongo, authenticateToken, async (req, res) => {
+    try {
+        const { email, name, certificateData } = req.body;
+        
+        if (!email || !name || !certificateData) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Convert base64 to buffer
+        const certificateBuffer = Buffer.from(certificateData.split(',')[1], 'base64');
+        
+        // Send email
+        const emailSent = await sendCertificateEmail(email, name, certificateBuffer);
+        
+        if (emailSent) {
+            res.json({ message: `Certificate sent to ${email}` });
+        } else {
+            throw new Error('Failed to send email');
+        }
+    } catch (error) {
+        console.error('Error sending certificate:', error);
+        res.status(500).json({ error: 'Failed to send certificate email' });
+    }
+});
+
 app.delete('/api/students/:id', requireMongo, authenticateToken, async (req, res) => {
     try {
         const student = await Student.findOneAndDelete({

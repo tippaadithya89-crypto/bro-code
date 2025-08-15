@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Changer - Certificate Generator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="dashboard.html" class="navbar-brand">
+                <i class="fas fa-certificate"></i>
+                Certificate Generator
+            </a>
+            <ul class="navbar-nav">
+                <li><span class="nav-link" style="color: #3498db;">
+                    <i class="fas fa-university"></i>
+                    <span id="collegeName">Loading...</span>
+                </span></li>
+                <li><a href="#" onclick="logout()" class="nav-link btn-primary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="text-changer-container">
+            <div class="section-header">
+                <h2><i class="fas fa-font"></i> Text Changer</h2>
+                <a href="dashboard.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <div class="text-editor-section">
+                <div class="text-input-area">
+                    <h3>Input Text</h3>
+                    <textarea id="inputText" rows="5" placeholder="Enter your text here..."></textarea>
+                </div>
+
+                <div class="text-controls">
+                    <div class="control-group">
+                        <label>Font Family</label>
+                        <select id="fontFamily">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Calibri">Calibri</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Font Size</label>
+                        <input type="number" id="fontSize" value="16" min="8" max="72">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Font Color</label>
+                        <input type="color" id="fontColor" value="#000000">
+                    </div>
+
+                    <div class="style-buttons">
+                        <button class="btn" id="boldBtn">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button class="btn" id="italicBtn">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button class="btn" id="underlineBtn">
+                            <i class="fas fa-underline"></i>
+                        </button>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Text Alignment</label>
+                        <div class="align-buttons">
+                            <button class="btn" id="alignLeftBtn">
+                                <i class="fas fa-align-left"></i>
+                            </button>
+                            <button class="btn" id="alignCenterBtn">
+                                <i class="fas fa-align-center"></i>
+                            </button>
+                            <button class="btn" id="alignRightBtn">
+                                <i class="fas fa-align-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-preview">
+                    <h3>Preview</h3>
+                    <div id="previewArea"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="copyText">
+                        <i class="fas fa-copy"></i> Copy Text
+                    </button>
+                    <button class="btn btn-primary" id="downloadText">
+                        <i class="fas fa-download"></i> Download as Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/text-changer.js"></script>
+</body>
+</html>
